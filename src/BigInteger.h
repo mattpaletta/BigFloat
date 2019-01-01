@@ -11,6 +11,9 @@
 
 class BigInteger {
 private:
+    static const int NUMBASE = 10;
+    BigInteger(std::vector<int> val, bool isPositive);
+
     bool isPositive;
     std::vector<int> repr;
 
@@ -23,8 +26,8 @@ private:
                 return {};
             } else {
                 // We compute the next digit, it will always be < 10
-                int digit = (int) current_val % 10;
-                current_val /= 10;
+                int digit = (int) current_val % NUMBASE;
+                current_val /= NUMBASE;
                 auto acc = parse()(current_val);
 
                 // Once we have already added to tail, we add the head
@@ -46,6 +49,13 @@ public:
     BigInteger(long long int val);
     BigInteger(unsigned long long int val);
 
+    bool operator==(const BigInteger b) const;
+    BigInteger operator+(BigInteger b);
+
+    BigInteger operator*(int b);
+
+    template<typename T>
+    BigInteger operator+(T b);
 
     virtual ~BigInteger();
 };
