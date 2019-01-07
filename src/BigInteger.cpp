@@ -88,14 +88,40 @@ BigInteger BigInteger::operator+(const BigInteger b) {
     }
 
     int carry = 0;
-
-    // Try and add b to a using carry's
-
     std::vector<int> result = {};
+    if (b.isPositive) {
+       return this + b;
+    } else {
+       return this - b;
+    }
+}
 
-    // We could the digits incrementally, but fetch them left to right, and pad with 0's
+BigInteger BigInteger::operator-(const BigInteger b) {
+    // We have two BigInteger's, so it's easy!
+
+    if (this->repr.empty()) {
+        return b;
+    } else if (b.repr.empty()) {
+        return BigInteger(this->repr, this->isPositive);
+    }
+
+    if (b.isPositive) {
+       return this - b;
+    } else {
+       return this + b;
+    }
+}
+
+BigInteger BigInteger::add(const BigInteger b, const bool isPositive) {
+    if (!isPositive) {
+        // If it's not positive, call the other method, it may come back here.
+        return this + b;
+    }
+
     for (auto i = 0; i < std::max(this->repr.size(), b.repr.size()) | carry; i++) {
-       // Make sure we don't overflow
+      int carry = 0;
+      std::vector<int> result = {};
+      // Make sure we don't overflow
        if (i == result.size()) {
            result.push_back(0);
        }
@@ -115,6 +141,31 @@ BigInteger BigInteger::operator+(const BigInteger b) {
     return BigInteger(result, isPositive);
 }
 
+BigInteger BigInteger::sub(const BigInteger b, const bool isPositive) {
+    if (!isPositive) {
+        // If it's not positive, call the other method, it may come back here.
+        return this - b;
+    }
+
+    int carry = 0;
+    vector<int> result = {};
+    for (auto i = 0; i < b.repr.size() || carry; ++i) {
+        if (i == result.size()) {
+            result.push_back(0);
+        }
+        result[i] = this->repr[i] - carry + (i < b.repr.size() ? b.repr[i] : 0);
+        carry = this->repr[i] < 0;
+        if (carry) {
+            result[i] += base;
+        }
+    }
+    while (result.size() > 1 && result.back() == 0) {
+        result.pop_back();
+    }
+    bool isPositive = this >= b;
+    return BigInteger(result, isPositive);
+}
+
 template<typename T>
 BigInteger BigInteger::operator+(T b) {
     auto b0 = BigInteger(b);
@@ -124,6 +175,16 @@ BigInteger BigInteger::operator+(T b) {
 bool BigInteger::operator==(const BigInteger b) const {
     return this->repr == b.repr &&
            this->isPositive == b.isPositive;
+}
+
+bool BigInteger::operator>=(const BigInteger b) const {
+    return this->repr >= b.repr;
+}
+
+bool BigInteger::operator>=(const vector<int> b) {
+    return this->repr.size() >= b.size() || 
+        (this->repr.size() == b.size() && 
+            this.repr.back() >= b.back());
 }
 
 BigInteger BigInteger::operator*(int b) {
