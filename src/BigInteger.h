@@ -8,6 +8,7 @@
 #pragma once
 
 #include <vector>
+#include <string>
 
 class BigInteger {
 private:
@@ -40,6 +41,7 @@ private:
     };
 
 public:
+    BigInteger(string val);
     BigInteger(int val);
     BigInteger(short int val);
     BigInteger(unsigned short int val);

@@ -2,8 +2,27 @@
 // Created by Matthew Paletta on 2018-12-31.
 //
 
+#include <string>
 #include <iostream>
 #include "BigInteger.h"
+
+BigInteger::BigInteger(string val) {
+    bool isPositive = true;
+    vector<int> result = {};
+    if (val.length() == 0) {
+        if (val[0] == "-") {
+            isPositive = false;
+        }
+    }
+    for (int i = (int) val.length(); i > 0; i -= 9) {
+        if (i < 9) {
+            result.push_back(atoi(val.substr(0, i).c_str()));
+        } else {
+            result.push_back(atoi(val.substr(i-9, 9).c_str()));
+        }
+    }
+    BigInteger(result, isPositive);
+}
 
 BigInteger::BigInteger(int val) {
     std::cout << "Creating Big Int" << std::endl;
@@ -75,40 +94,23 @@ BigInteger BigInteger::operator+(const BigInteger b) {
     std::vector<int> result = {};
 
     // We could the digits incrementally, but fetch them left to right, and pad with 0's
-    for (auto i = 0; i < std::max(this->repr.size(), b.repr.size()); i++) {
-        // assume a and b are the same size first.
+    for (auto i = 0; i < std::max(this->repr.size(), b.repr.size()) | carry; i++) {
+       // Make sure we don't overflow
+       if (i == result.size()) {
+           result.push_back(0);
+       }
+       if (i == this->repr.size()) {
+           this->repr.push_back(0);
+       }
+       if (i == b.repr.size()) {
+           b.repr.push_back(0);
+       }
 
-        int aDigit = 0, bDigit = 0;
-        int aIndex = this->repr.size() - i - 1;
-        int bIndex = b.repr.size() - i - 1;
-
-        // TODO:// Fix these indexes!
-        if (aIndex > 0) {
-            aDigit = this->repr.at(aIndex);
-        } else {
-            aDigit = 0;
-        }
-
-        if (bIndex > 0) {
-            bDigit = b.repr.at(bIndex);
-        } else {
-            bDigit = 0;
-        }
-
-        int newDigit = aDigit + bDigit + carry;
-
-        if (carry > 0) {
-            // Once we applied the carry once, we remove it.
-            carry = 0;
-        }
-
-        if (newDigit >= NUMBASE) {
-            carry = NUMBASE - newDigit;
-            newDigit -= carry;
-        }
-
-        // Add this to the back of the list
-        result.push_back(newDigit);
+       result[i] += carry + (i < b.repr.size() ? b[i] : 0);
+       carry = result[i] >= base;
+       if (carry) {
+           result[i] -= base;
+       }
     }
     return BigInteger(result, isPositive);
 }
