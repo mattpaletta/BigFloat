@@ -5,6 +5,11 @@ addons:
   apt:
     packages:
       - cmake
+    update: true
+
+compiler:
+  - clang
+  - gcc
 
 script:
   - mkdir build && cd build && cmake .. && make
