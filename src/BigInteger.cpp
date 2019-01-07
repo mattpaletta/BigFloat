@@ -6,11 +6,11 @@
 #include <iostream>
 #include "BigInteger.h"
 
-BigInteger::BigInteger(string val) {
+BigInteger::BigInteger(std::string val) {
     bool isPositive = true;
-    vector<int> result = {};
+    std::vector<int> result = {};
     if (val.length() == 0) {
-        if (val[0] == "-") {
+        if (strncmp(val[0],"-") == 0) {
             isPositive = false;
         }
     }
@@ -118,7 +118,7 @@ BigInteger BigInteger::add(const BigInteger b, const bool isPositive) {
         return this + b;
     }
 
-    for (auto i = 0; i < std::max(this->repr.size(), b.repr.size()) | carry; i++) {
+    for (auto i = 0; i < std::max(this->repr.size(), b.repr.size()) || carry; i++) {
       int carry = 0;
       std::vector<int> result = {};
       // Make sure we don't overflow
@@ -133,9 +133,9 @@ BigInteger BigInteger::add(const BigInteger b, const bool isPositive) {
        }
 
        result[i] += carry + (i < b.repr.size() ? b[i] : 0);
-       carry = result[i] >= base;
+       carry = result[i] >= NUMBASE;
        if (carry) {
-           result[i] -= base;
+           result[i] -= NUMBASE;
        }
     }
     return BigInteger(result, isPositive);
@@ -148,7 +148,7 @@ BigInteger BigInteger::sub(const BigInteger b, const bool isPositive) {
     }
 
     int carry = 0;
-    vector<int> result = {};
+    std::vector<int> result = {};
     for (auto i = 0; i < b.repr.size() || carry; ++i) {
         if (i == result.size()) {
             result.push_back(0);

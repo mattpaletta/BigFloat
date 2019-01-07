@@ -41,7 +41,7 @@ private:
     };
 
 public:
-    BigInteger(string val);
+    BigInteger(std::string val);
     BigInteger(int val);
     BigInteger(short int val);
     BigInteger(unsigned short int val);
@@ -53,7 +53,7 @@ public:
 
     bool operator==(const BigInteger b) const;
     BigInteger operator+(BigInteger b);
-
+    BigInteger operator-(BigInteger b) const;
     BigInteger operator*(int b);
 
     template<typename T>
