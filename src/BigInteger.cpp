@@ -2,6 +2,10 @@
 // Created by Matthew Paletta on 2018-12-31.
 //
 
+#include <vector>
+#include <algorithm>
+#include <sstream>
+#include <iterator>
 #include <string>
 #include <iostream>
 #include "BigInteger.h"
@@ -10,7 +14,7 @@ BigInteger::BigInteger(std::string val) {
     bool isPositive = true;
     std::vector<int> result = {};
     if (val.length() == 0) {
-        if (strncmp(val[0],"-") == 0) {
+        if (val.compare(0, 1,"-") == 0) {
             isPositive = false;
         }
     }
@@ -21,7 +25,7 @@ BigInteger::BigInteger(std::string val) {
             result.push_back(atoi(val.substr(i-9, 9).c_str()));
         }
     }
-    BigInteger(result, isPositive);
+    *this = BigInteger(result, isPositive);
 }
 
 BigInteger::BigInteger(int val) {
@@ -78,7 +82,7 @@ BigInteger::~BigInteger() {
     std::cout << "Deleting Big Float" << std::endl;
 }
 
-BigInteger BigInteger::operator+(const BigInteger b) {
+BigInteger BigInteger::operator+(BigInteger b) {
     // We have two BigInteger's, so it's easy!
 
     if (this->repr.empty()) {
@@ -87,12 +91,10 @@ BigInteger BigInteger::operator+(const BigInteger b) {
         return BigInteger(this->repr, this->isPositive);
     }
 
-    int carry = 0;
-    std::vector<int> result = {};
     if (b.isPositive) {
-       return this + b;
+       return add(b, true);
     } else {
-       return this - b;
+       return sub(b, false);
     }
 }
 
@@ -106,45 +108,46 @@ BigInteger BigInteger::operator-(const BigInteger b) {
     }
 
     if (b.isPositive) {
-       return this - b;
+       return sub(b, true);
     } else {
-       return this + b;
+       return add(b, false);
     }
 }
 
-BigInteger BigInteger::add(const BigInteger b, const bool isPositive) {
+BigInteger BigInteger::add(BigInteger b, bool isPositive) {
     if (!isPositive) {
         // If it's not positive, call the other method, it may come back here.
-        return this + b;
+        return add(b, true);
     }
 
-    for (auto i = 0; i < std::max(this->repr.size(), b.repr.size()) || carry; i++) {
-      int carry = 0;
-      std::vector<int> result = {};
-      // Make sure we don't overflow
-       if (i == result.size()) {
-           result.push_back(0);
-       }
-       if (i == this->repr.size()) {
-           this->repr.push_back(0);
-       }
-       if (i == b.repr.size()) {
-           b.repr.push_back(0);
-       }
+    int carry = 0;
+    std::vector<int> result = {};
 
-       result[i] += carry + (i < b.repr.size() ? b[i] : 0);
-       carry = result[i] >= NUMBASE;
-       if (carry) {
-           result[i] -= NUMBASE;
-       }
+    for (auto i = 0; i < std::max(this->repr.size(), b.repr.size()) || carry; i++) {
+        // Make sure we don't overflow
+        if (i == result.size()) {
+            result.push_back(0);
+        }
+        if (i == this->repr.size()) {
+            this->repr.push_back(0);
+        }
+        if (i == b.repr.size()) {
+            b.repr.push_back(0);
+        }
+
+        result[i] = this->repr[i] + carry + (i < b.repr.size() ? b.repr[i] : 0);
+        carry = result[i] >= NUMBASE;
+        if (carry) {
+            result[i] -= NUMBASE;
+        }
     }
     return BigInteger(result, isPositive);
 }
 
-BigInteger BigInteger::sub(const BigInteger b, const bool isPositive) {
+BigInteger BigInteger::sub(BigInteger b, bool isPositive) {
     if (!isPositive) {
         // If it's not positive, call the other method, it may come back here.
-        return this - b;
+        return *this - b;
     }
 
     int carry = 0;
@@ -156,14 +159,13 @@ BigInteger BigInteger::sub(const BigInteger b, const bool isPositive) {
         result[i] = this->repr[i] - carry + (i < b.repr.size() ? b.repr[i] : 0);
         carry = this->repr[i] < 0;
         if (carry) {
-            result[i] += base;
+            result[i] += NUMBASE;
         }
     }
     while (result.size() > 1 && result.back() == 0) {
         result.pop_back();
     }
-    bool isPositive = this >= b;
-    return BigInteger(result, isPositive);
+    return BigInteger(result, *this >= b);
 }
 
 template<typename T>
@@ -181,10 +183,10 @@ bool BigInteger::operator>=(const BigInteger b) const {
     return this->repr >= b.repr;
 }
 
-bool BigInteger::operator>=(const vector<int> b) {
+bool BigInteger::operator>=(const std::vector<int> b) const {
     return this->repr.size() >= b.size() || 
         (this->repr.size() == b.size() && 
-            this.repr.back() >= b.back());
+            this->repr.back() >= b.back());
 }
 
 BigInteger BigInteger::operator*(int b) {
@@ -196,4 +198,20 @@ BigInteger BigInteger::operator*(int b) {
     }
 
     return result;
+}
+
+std::string BigInteger::string() const {
+
+    std::ostringstream oss;
+
+    if (!this->repr.empty()) {
+        // Convert all but the last element to avoid a trailing ","
+        std::copy(this->repr.begin(), this->repr.end()-1,
+                  std::ostream_iterator<int>(oss, ","));
+
+        // Now add the last element with no delimiter
+        oss << this->repr.back();
+    }
+
+    return oss.str();
 }

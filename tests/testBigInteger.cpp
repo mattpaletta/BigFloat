@@ -12,7 +12,7 @@ TEST(test_sample_case, test_single_digit) {
 
     auto val1 = BigInteger(v1);
     auto val2 = BigInteger(v2);
-    EXPECT_EQ(val1 + val2, BigInteger(v1 + v2));
+    EXPECT_EQ((val1 + val2).string(), BigInteger(v1 + v2).string());
 }
 
 TEST(test_sample_case2, test_multiple_digit) {
@@ -22,5 +22,5 @@ TEST(test_sample_case2, test_multiple_digit) {
     auto val1 = BigInteger(v1);
     auto val2 = BigInteger(v2);
 
-    EXPECT_EQ(val1 + val2, BigInteger(v1 + v2));
+    EXPECT_EQ((val1 + val2).string(), BigInteger(v1 + v2).string());
 }
