@@ -25,20 +25,23 @@ private:
     struct parse {
         template <class T>
         std::vector<int> operator()(T current_val) {
+            return parse()(current_val, {});
+        }
+
+        template <class T>
+        std::vector<int> operator()(T current_val, std::vector<int> acc) {
             if (current_val == 0) {
                 // Once we reach 0, we stop
-                return {};
+                return acc;
             } else {
                 // We compute the next digit, it will always be < 10
                 int digit = (int) current_val % NUMBASE;
                 current_val /= NUMBASE;
-                auto acc = parse()(current_val);
 
                 // Once we have already added to tail, we add the head
                 acc.push_back(digit);
 
-                // Return the list
-                return acc;
+                return parse()(current_val);
             }
         }
     };
