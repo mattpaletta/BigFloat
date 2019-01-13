@@ -11,7 +11,7 @@ target_link_libraries(
 
 add_test(
         NAME
-        unit
+        ${PROJECT_NAME}_test
         COMMAND
-        ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_BINDIR}/unit_tests
+        ${CMAKE_BINARY_DIR}/tests/${PROJECT_NAME}_test
 )

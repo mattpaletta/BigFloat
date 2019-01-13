@@ -10,8 +10,11 @@ addons:
 compiler:
   - clang
 
-script:
+install:
   - mkdir build && cd build && cmake .. && make
+
+script:
+  - cd build && ./tests/BigFloat_test
 
 notifications:
   email:
