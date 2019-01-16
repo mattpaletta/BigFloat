@@ -13,10 +13,6 @@
 class BigInteger {
 private:
     static const int NUMBASE = 10;
-    BigInteger(std::vector<int> val, bool isPositive);
-    bool operator>=(std::vector<int> b) const;
-    BigInteger add(BigInteger b, bool isPositive);
-    BigInteger sub(BigInteger b, bool isPositive);
 
     bool isPositive;
     std::vector<int> repr;
@@ -56,6 +52,11 @@ public:
     BigInteger(unsigned long int val);
     BigInteger(long long int val);
     BigInteger(unsigned long long int val);
+    BigInteger(std::vector<int> val, bool isPositive);
+    bool operator>=(std::vector<int> b) const;
+    BigInteger add(BigInteger b, bool isPositive);
+    BigInteger sub(BigInteger b, bool isPositive);
+
 
     std::string string() const;
 

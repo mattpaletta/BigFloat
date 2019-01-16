@@ -7,6 +7,12 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_library(BigFloat src/BigInteger)
 
+option(BUILD_PYTHON "Build Python SWIG module" ON)
+
+if (BUILD_PYTHON)
+    add_subdirectory(python)
+endif()
+
 # Setup testing
 include(cmake/googletest.cmake)
 fetch_googletest(
