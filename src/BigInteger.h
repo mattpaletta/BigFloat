@@ -17,6 +17,11 @@ private:
     bool isPositive;
     std::vector<int> repr;
 
+    BigInteger(std::vector<int> val, bool isPositive);
+    bool operator>=(std::vector<int> b) const;
+    BigInteger add(BigInteger b, bool isPositive);
+    BigInteger sub(BigInteger b, bool isPositive);
+
     // Helper function used to turn number into integer
     struct parse {
         template <class T>
@@ -52,11 +57,6 @@ public:
     BigInteger(unsigned long int val);
     BigInteger(long long int val);
     BigInteger(unsigned long long int val);
-    BigInteger(std::vector<int> val, bool isPositive);
-    bool operator>=(std::vector<int> b) const;
-    BigInteger add(BigInteger b, bool isPositive);
-    BigInteger sub(BigInteger b, bool isPositive);
-
 
     std::string string() const;
 
